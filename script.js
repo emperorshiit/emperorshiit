@@ -3,9 +3,9 @@ const typedTextSpan = document.querySelector(".typed-text");
 const cursorSpan = document.querySelector(".cursor");
 
 const textArray = ["Web Developer", "UI/UX Designer", "Graphic Artist", "Video Editor"];
-const typingDelay = 100;
-const erasingDelay = 50;
-const newTextDelay = 2000;
+const typingDelay = 70;
+const erasingDelay = 35;
+const newTextDelay = 1500;
 let textArrayIndex = 0;
 let charIndex = 0;
 
@@ -37,6 +37,251 @@ function erase() {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Portfolio JS running');
+
+    // Mobile navigation functionality
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    let isMobileMenuOpen = false;
+
+    // Create mobile navigation elements
+    function createMobileNavigation() {
+        // Create mobile nav circle
+        const mobileNavCircle = document.createElement('div');
+        mobileNavCircle.className = 'mobile-nav-circle';
+        mobileNavCircle.innerHTML = '<i class="fas fa-bars"></i>';
+        
+        // Create mobile nav menu overlay
+        const mobileNavMenu = document.createElement('div');
+        mobileNavMenu.className = 'mobile-nav-menu';
+        
+        // Create close button (only one)
+        const mobileNavClose = document.createElement('div');
+        mobileNavClose.className = 'mobile-nav-close';
+        mobileNavClose.innerHTML = '<i class="fas fa-times"></i>';
+        
+        // Create mobile menu content structure
+        const mobileNavContent = document.createElement('div');
+        mobileNavContent.className = 'mobile-nav-content';
+        
+        // Create profile section
+        const profileSection = document.createElement('div');
+        profileSection.className = 'profile';
+        profileSection.innerHTML = `
+            <img src="https://res.cloudinary.com/dutlqrrdg/image/upload/v1752939468/5c568958-af68-473c-a886-17bbda943fd9_omi0hy.png" alt="Profile" class="profile-img">
+            <h2 class="profile-name">Russell Reyes</h2>
+            <div class="sidebar-social-links">
+                <a href="https://www.facebook.com/Russellshiit" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com/russellreyz/" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/russell-reyes-a298ba35a/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://t.me/darkiest_shiit" target="_blank"><i class="fab fa-telegram"></i></a>
+            </div>
+        `;
+        
+        // Create navigation links
+        const navLinks = document.createElement('ul');
+        navLinks.className = 'sidebar-nav-links';
+        navLinks.innerHTML = `
+            <li><a href="#home"><i class="fas fa-home"></i> <span>Home</span></a></li>
+            <li><a href="#about"><i class="fas fa-user"></i> <span>About</span></a></li>
+            <li><a href="#resume"><i class="fas fa-file-alt"></i> <span>Resume</span></a></li>
+            <li><a href="#portfolio"><i class="fas fa-image"></i> <span>Portfolio</span></a></li>
+            <li><a href="#services"><i class="fas fa-briefcase"></i> <span>Services</span></a></li>
+        `;
+        
+        // Assemble the mobile menu (only one close button)
+        mobileNavContent.appendChild(profileSection);
+        mobileNavContent.appendChild(navLinks);
+        mobileNavMenu.appendChild(mobileNavClose);
+        mobileNavMenu.appendChild(mobileNavContent);
+        
+        // Only show on mobile devices
+        if (window.innerWidth <= 768) {
+            document.body.appendChild(mobileNavCircle);
+            document.body.appendChild(mobileNavMenu);
+            
+            // Mobile nav circle click handler
+            mobileNavCircle.addEventListener('click', () => {
+                isMobileMenuOpen = !isMobileMenuOpen;
+                if (isMobileMenuOpen) {
+                    mobileNavMenu.style.display = 'flex';
+                    setTimeout(() => {
+                        mobileNavMenu.classList.add('show');
+                    }, 10);
+                    // Keep the hamburger icon, don't change to X
+                } else {
+                    mobileNavMenu.classList.remove('show');
+                    setTimeout(() => {
+                        mobileNavMenu.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // Close button click handler
+            mobileNavClose.addEventListener('click', () => {
+                isMobileMenuOpen = false;
+                mobileNavMenu.classList.remove('show');
+                setTimeout(() => {
+                    mobileNavMenu.style.display = 'none';
+                }, 300);
+            });
+            
+            // Close menu when clicking outside
+            mobileNavMenu.addEventListener('click', (e) => {
+                if (e.target === mobileNavMenu) {
+                    isMobileMenuOpen = false;
+                    mobileNavMenu.classList.remove('show');
+                    setTimeout(() => {
+                        mobileNavMenu.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // Handle navigation links in mobile menu
+            const mobileNavLinks = mobileNavMenu.querySelectorAll('a[href^="#"]');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    isMobileMenuOpen = false;
+                    mobileNavMenu.classList.remove('show');
+                    setTimeout(() => {
+                        mobileNavMenu.style.display = 'none';
+                    }, 300);
+                });
+            });
+            
+            // Handle social media links in mobile menu
+            const socialLinks = mobileNavMenu.querySelectorAll('.sidebar-social-links a');
+            socialLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const url = link.getAttribute('href');
+                    if (url) {
+                        try {
+                            window.open(url, '_blank', 'noopener,noreferrer');
+                        } catch (error) {
+                            console.log('Could not open link:', url);
+                            // Fallback: try to open in same window
+                            window.location.href = url;
+                        }
+                    }
+                });
+            });
+            
+            // Handle mobile menu profile image click to open modal
+            const mobileProfileImg = mobileNavMenu.querySelector('.profile-img');
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalCaption = document.querySelector('.modal-caption');
+            
+            if (mobileProfileImg && modal && modalImg) {
+                mobileProfileImg.style.cursor = 'pointer';
+                mobileProfileImg.addEventListener('click', function() {
+                    modal.style.display = 'block';
+                    modalImg.src = mobileProfileImg.src;
+                    modalCaption.textContent = 'Russell Reyes';
+                    setTimeout(function() {
+                        modal.classList.add('show');
+                    }, 10);
+                    
+                    // Close mobile menu when profile is clicked
+                    isMobileMenuOpen = false;
+                    mobileNavMenu.classList.remove('show');
+                    setTimeout(() => {
+                        mobileNavMenu.style.display = 'none';
+                    }, 300);
+                });
+            }
+        }
+    }
+
+    // Initialize mobile navigation
+    createMobileNavigation();
+    
+    // Handle social media links in original sidebar
+    const originalSocialLinks = document.querySelectorAll('.sidebar .sidebar-social-links a');
+    originalSocialLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = link.getAttribute('href');
+            if (url) {
+                try {
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                } catch (error) {
+                    console.log('Could not open link:', url);
+                    // Fallback: try to open in same window
+                    window.location.href = url;
+                }
+            }
+        });
+    });
+
+    // Function to handle external links for mobile compatibility
+    function handleExternalLink(url) {
+        // Check if we're on a mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // For mobile, try multiple approaches
+            try {
+                // First attempt: window.open
+                const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+                if (newWindow && !newWindow.closed) {
+                    return; // Success
+                }
+            } catch (error) {
+                console.log('window.open failed:', error);
+            }
+            
+            try {
+                // Second attempt: location.href
+                window.location.href = url;
+            } catch (error) {
+                console.log('location.href failed:', error);
+            }
+        } else {
+            // For desktop, use standard approach
+            try {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                window.location.href = url;
+            }
+        }
+    }
+
+    // Handle "Other Sample" button for mobile compatibility
+    const otherSampleBtn = document.querySelector('.other-sample-btn');
+    if (otherSampleBtn) {
+        otherSampleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = otherSampleBtn.getAttribute('href');
+            if (url) {
+                handleExternalLink(url);
+            }
+        });
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        const mobileNavCircle = document.querySelector('.mobile-nav-circle');
+        const mobileNavMenu = document.querySelector('.mobile-nav-menu');
+        
+        if (window.innerWidth <= 768) {
+            if (!mobileNavCircle) {
+                createMobileNavigation();
+            }
+        } else {
+            if (mobileNavCircle) {
+                mobileNavCircle.remove();
+            }
+            if (mobileNavMenu) {
+                mobileNavMenu.remove();
+            }
+            // Reset sidebar state on desktop
+            if (sidebar) {
+                sidebar.style.display = '';
+            }
+            isMobileMenuOpen = false;
+        }
+    });
 
     // Modal functionality
     const modal = document.getElementById('imageModal');
@@ -84,13 +329,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Smooth Scrolling
+    // Enhanced Smooth Scrolling with mobile considerations
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                // Close mobile menu if open
+                if (isMobileMenuOpen) {
+                    const mobileNavCircle = document.querySelector('.mobile-nav-circle');
+                    const mobileNavMenu = document.querySelector('.mobile-nav-menu');
+                    if (mobileNavCircle && mobileNavMenu) {
+                        isMobileMenuOpen = false;
+                        mobileNavMenu.classList.remove('show');
+                        setTimeout(() => {
+                            mobileNavMenu.style.display = 'none';
+                        }, 300);
+                    }
+                }
+                
+                // Smooth scroll to target
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         });
     });
 
